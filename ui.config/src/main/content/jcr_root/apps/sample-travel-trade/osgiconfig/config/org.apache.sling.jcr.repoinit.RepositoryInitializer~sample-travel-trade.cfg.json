@@ -1,0 +1,7 @@
+{
+    "scripts": [
+        "create path (sling:OrderedFolder) /content/dam/sample-travel-trade",
+        "create path (nt:unstructured) /content/dam/sample-travel-trade/jcr:content",
+        "set properties on /content/dam/sample-travel-trade/jcr:content\n  set cq:conf{String} to /conf/sample-travel-trade\n  set jcr:title{String} to \"Sample Travel Trade\"\nend"
+    ]
+}
