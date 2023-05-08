@@ -16,18 +16,9 @@
 
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
+import {AuthoringUtils} from "@adobe/aem-spa-page-model-manager";
+import {PROJECT_URL_ROOT} from "../appConstants";
 
-/**
- * Helper that facilitate the use of the {@link Route} component
- */
-
-/**
- * Returns a composite component where a {@link Route} component wraps the provided component
- *
- * @param {React.Component} WrappedComponent    - React component to be wrapped
- * @param {string} [extension=html]             - extension used to identify a route amongst the tree of resource URLs
- * @returns {CompositeRoute}
- */
 export const withRoute = (WrappedComponent, extension) => {
   return class CompositeRoute extends Component {
     render() {
@@ -38,12 +29,20 @@ export const withRoute = (WrappedComponent, extension) => {
 
       extension = extension || 'html';
 
+	  let paths = ['(.*)' + routePath + '(.' + extension + ')?'];
+	  
+	  if (!AuthoringUtils.isInEditor() && routePath.startsWith(PROJECT_URL_ROOT)) {
+                paths.push(routePath.substring(PROJECT_URL_ROOT.length) + ".html");
+            }
+	  console.log(paths);
+
+
       // Context path + route path + extension
       return (
         <Route
           key={routePath}
           exact
-          path={'(.*)' + routePath + '(.' + extension + ')?'}
+          path={paths}
           render={routeProps => {
             return <WrappedComponent {...this.props} {...routeProps} />;
           }}

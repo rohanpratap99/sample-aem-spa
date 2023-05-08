@@ -8,14 +8,34 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router } from 'react-router-dom';
 import App from './App';
+import {ModelClient} from '@adobe/aem-spa-page-model-manager';
 import LocalDevModelClient from './LocalDevModelClient';
 import './components/import-components';
 import './index.css';
 
+class ShortURLModelClient extends ModelClient {
+    fetch(modelPath) {
+        //if the path does not start with /content (page editing) or /conf (template editing) return empty model
+        if (modelPath && !/^\/content|^\/conf/.test(modelPath)) {
+            return Promise.resolve({});
+        } else {
+            return super.fetch(modelPath);
+        }
+    }
+}
+
 const modelManagerOptions = {};
+
+if (process.env.REACT_APP_PROXY_ENABLED) {
+    modelManagerOptions.modelClient = new LocalDevModelClient(process.env.REACT_APP_API_HOST);
+} else {
+    modelManagerOptions.modelClient = new ShortURLModelClient(process.env.REACT_APP_API_HOST);
+}
+
+/*const modelManagerOptions = {};
 if(process.env.REACT_APP_PROXY_ENABLED) {
     modelManagerOptions.modelClient = new LocalDevModelClient(process.env.REACT_APP_API_HOST);
-}
+}*/
 
 const renderApp = () => {
     ModelManager.initialize(modelManagerOptions).then(pageModel => {
